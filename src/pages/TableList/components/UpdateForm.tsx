@@ -1,7 +1,7 @@
-import { ModalForm, ProFormText } from '@ant-design/pro-components';
+import { ModalForm, ProForm, ProFormDigit, ProFormText } from '@ant-design/pro-components';
 import '@umijs/max';
 import React, { useState } from 'react';
-import { Form } from 'antd';
+import { Form, Select } from 'antd';
 import RichTextEditor from '@/components/RichTextEditor';
 
 export type FormValueType = {
@@ -21,6 +21,14 @@ export type UpdateFormProps = {
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   const [curContent, setCurContent] = useState(props.values.content);
   console.log(props.values, 'props.values');
+  const contentTypeMap = [
+    { value: 0, label: <span>普通文本</span> },
+    { value: 1, label: <span>markdown</span> },
+    {
+      value: 2,
+      label: <span>富文本</span>,
+    },
+  ];
   return (
     <ModalForm
       modalProps={{
@@ -36,7 +44,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
       onFinish={(values) => {
         return props.onSubmit({
           ...values,
-          content: curContent
+          content: curContent,
         });
       }}
       open={props.updateModalOpen}
@@ -53,41 +61,31 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
           },
         ]}
       />
-      <Form.Item name="content" label="内容">
+      <ProForm.Item name="content" label="内容">
         <div style={{ border: '1px solid #d9d9d9', borderRadius: '10px', padding: '8px' }}>
           <RichTextEditor onChange={setCurContent} value={props.values.content}></RichTextEditor>
         </div>
-      </Form.Item>
-      {/*<ProFormText*/}
-      {/*  name="content"*/}
-      {/*  label={'内容'}*/}
-      {/*  width="md"*/}
-      {/*  rules={[*/}
-      {/*    {*/}
-      {/*      required: true,*/}
-      {/*      message: '请输入标题！',*/}
-      {/*    },*/}
-      {/*  ]}*/}
-      {/*/>*/}
-      <ProFormText
+      </ProForm.Item>
+      <ProForm.Item
         name="contentType"
         label={'内容格式'}
-        width="md"
         rules={[
           {
             required: true,
             message: '请输入标题！',
           },
         ]}
-      />
-      <ProFormText
+      >
+        <Select options={contentTypeMap} />
+      </ProForm.Item>
+      <ProFormDigit
         name="priority"
         label={'优先级'}
         width="md"
         rules={[
           {
             required: true,
-            message: '请输入标题！',
+            message: '请输入大于 0 的数字！',
           },
         ]}
       />
