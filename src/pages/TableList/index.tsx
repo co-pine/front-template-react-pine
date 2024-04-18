@@ -1,17 +1,22 @@
 import { PlusOutlined } from '@ant-design/icons';
-import type { ActionType, ProColumns, ProDescriptionsItemProps } from '@ant-design/pro-components';
+import {
+  ActionType,
+  ProColumns,
+  ProDescriptionsItemProps,
+  ProForm,
+  ProFormDigit,
+} from '@ant-design/pro-components';
 import {
   ModalForm,
   PageContainer,
   ProDescriptions,
   ProFormText,
-  ProFormTextArea,
   ProTable,
 } from '@ant-design/pro-components';
 import '@umijs/max';
-import { Button, Drawer, message } from 'antd';
+import {Button, Drawer, message, Select, Popconfirm, Form} from 'antd';
 import React, { useRef, useState } from 'react';
-import type { FormValueType } from './components/UpdateForm';
+import { contentTypeMap, FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
 import {
   addBackup,
@@ -19,7 +24,8 @@ import {
   editBackup,
   listBackupVoByPage,
 } from '@/services/backend-template-new-pine/backupController';
-import RichTextViewer from "@/components/RichTextViewer";
+import RichTextViewer from '@/components/RichTextViewer';
+import RichTextEditor from '@/components/RichTextEditor';
 
 /**
  * @en-US Add node
@@ -29,15 +35,30 @@ import RichTextViewer from "@/components/RichTextViewer";
 const handleAdd = async (fields: API.BackupAddRequest) => {
   const hide = message.loading('正在添加');
   try {
-    await addBackup({
-      ...fields,
-    });
+    await addBackup(fields);
     hide();
-    message.success('Added successfully');
+    message.success('备忘条添加成功');
     return true;
   } catch (error) {
     hide();
-    message.error('Adding failed, please try again!');
+    return false;
+  }
+};
+
+/**
+ * @en-US Delete node
+ * @zh-CN 删除节点
+ * @param id
+ */
+const handleDelete = async (id: number) => {
+  const hide = message.loading('正在删除');
+  try {
+    await deleteBackup({ id });
+    hide();
+    message.success('备忘条删除成功');
+    return true;
+  } catch (error) {
+    hide();
     return false;
   }
 };
@@ -53,7 +74,7 @@ const handleUpdate = async (fields: FormValueType) => {
   try {
     console.log(fields, '....');
     await editBackup({
-      ...fields
+      ...fields,
     });
     hide();
     message.success('Configuration is successful');
@@ -93,6 +114,7 @@ const TableList: React.FC = () => {
    * @zh-CN 新建窗口的弹窗
    *  */
   const [createModalOpen, handleModalOpen] = useState<boolean>(false);
+  const [addContent, setAddContent] = useState('');
   /**
    * @en-US The pop-up window of the distribution update window
    * @zh-CN 分布更新窗口的弹窗
@@ -100,6 +122,7 @@ const TableList: React.FC = () => {
   const [updateModalOpen, handleUpdateModalOpen] = useState<boolean>(false);
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
+  const [form] = Form.useForm();
   const [currentRow, setCurrentRow] = useState<API.BackupVO>();
   const [selectedRowsState, setSelectedRows] = useState<API.BackupVO[]>([]);
 
@@ -134,15 +157,8 @@ const TableList: React.FC = () => {
     {
       title: '内容',
       dataIndex: 'content',
-      valueType: 'textarea',
-    },
-    {
-      title: '内容2',
-      dataIndex: 'content',
       render: (dom) => {
-        return (
-          <RichTextViewer htmlContent={dom as string}></RichTextViewer>
-        );
+        return <RichTextViewer htmlContent={dom as string}></RichTextViewer>;
       },
     },
     {
@@ -151,14 +167,30 @@ const TableList: React.FC = () => {
       valueType: 'option',
       render: (_, record) => [
         <a
-          key="config"
+          key="modify"
           onClick={() => {
             handleUpdateModalOpen(true);
             setCurrentRow(record);
           }}
         >
           修改
-        </a>
+        </a>,
+        <Popconfirm
+          key="confirmDelete"
+          title="删除备忘条"
+          description="删除后无法恢复，你确定要删除吗？"
+          onConfirm={(e) => {
+            console.log(e);
+            handleDelete(record.id as number);
+            if (actionRef.current) {
+              actionRef.current.reload();
+            }
+          }}
+          okText="确认"
+          cancelText="取消"
+        >
+          <a key="delete">删除</a>
+        </Popconfirm>,
       ],
     },
   ];
@@ -210,31 +242,62 @@ const TableList: React.FC = () => {
         </>
       )}
       <ModalForm
-        title={'新建规则'}
-        width="400px"
+        form={form}
+        title={'新建备忘条'}
+        width="800px"
         open={createModalOpen}
         onOpenChange={handleModalOpen}
         onFinish={async (value) => {
-          const success = await handleAdd(value as API.BackupVO);
+          const success = await handleAdd({ ...value, content: addContent } as API.BackupVO);
           if (success) {
             handleModalOpen(false);
             if (actionRef.current) {
               actionRef.current.reload();
             }
+            form.resetFields();
           }
         }}
       >
+        <ProFormText name="id" label={'id'} width="md" hidden={true} />
         <ProFormText
+          name="title"
+          label={'标题'}
+          width="md"
           rules={[
             {
               required: true,
-              message: '规则名称为必填项',
+              message: '请输入标题！',
             },
           ]}
-          width="md"
-          name="name"
         />
-        <ProFormTextArea width="md" name="desc" />
+        <ProForm.Item name="content" label="内容">
+          <div style={{ border: '1px solid #d9d9d9', borderRadius: '10px', padding: '8px' }}>
+            <RichTextEditor onChange={setAddContent}></RichTextEditor>
+          </div>
+        </ProForm.Item>
+        <ProForm.Item
+          name="contentType"
+          label={'内容格式'}
+          rules={[
+            {
+              required: true,
+              message: '请输入标题！',
+            },
+          ]}
+        >
+          <Select options={contentTypeMap} />
+        </ProForm.Item>
+        <ProFormDigit
+          name="priority"
+          label={'优先级'}
+          width="md"
+          rules={[
+            {
+              required: true,
+              message: '请输入大于 0 的数字！',
+            },
+          ]}
+        />
       </ModalForm>
       <UpdateForm
         onSubmit={async (value) => {

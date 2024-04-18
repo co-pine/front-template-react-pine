@@ -18,17 +18,18 @@ export type UpdateFormProps = {
   updateModalOpen: boolean;
   values: Partial<API.BackupVO>;
 };
+export const contentTypeMap = [
+  { value: 0, label: <span>普通文本</span> },
+  { value: 1, label: <span>markdown</span> },
+  {
+    value: 2,
+    label: <span>富文本</span>,
+  },
+];
+
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   const [curContent, setCurContent] = useState(props.values.content);
   console.log(props.values, 'props.values');
-  const contentTypeMap = [
-    { value: 0, label: <span>普通文本</span> },
-    { value: 1, label: <span>markdown</span> },
-    {
-      value: 2,
-      label: <span>富文本</span>,
-    },
-  ];
   return (
     <ModalForm
       modalProps={{
