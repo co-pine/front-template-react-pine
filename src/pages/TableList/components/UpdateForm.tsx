@@ -1,7 +1,7 @@
 import { ModalForm, ProForm, ProFormDigit, ProFormText } from '@ant-design/pro-components';
 import '@umijs/max';
 import React, { useState } from 'react';
-import { Form, Select } from 'antd';
+import { Select } from 'antd';
 import RichTextEditor from '@/components/RichTextEditor';
 
 export type FormValueType = {
