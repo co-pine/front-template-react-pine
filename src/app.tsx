@@ -21,6 +21,7 @@ export async function getInitialState(): Promise<{
   fetchUserInfo?: () => Promise<API.LoginUserVO | undefined>;
 }> {
   const fetchUserInfo = async () => {
+    console.log('app.tsx, get login user')
     try {
       const msg = await getLoginUser({
         skipErrorHandler: true,
@@ -55,7 +56,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       src: initialState?.currentUser?.userAvatar,
       title: <AvatarName />,
       render: (_, avatarChildren) => {
-        console.log(initialState?.currentUser?.userAvatar, 'avatar');
         return <AvatarDropdown>{avatarChildren}</AvatarDropdown>;
       },
     },
