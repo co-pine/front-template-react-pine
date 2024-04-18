@@ -14,7 +14,7 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import '@umijs/max';
-import {Button, Drawer, message, Select, Popconfirm, Form} from 'antd';
+import { Button, Drawer, message, Select, Popconfirm, Form } from 'antd';
 import React, { useRef, useState } from 'react';
 import { contentTypeMap, FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
@@ -214,7 +214,7 @@ const TableList: React.FC = () => {
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        request={async (params, sort, keyword) => {
+        request={async (params) => {
           const resp = await listBackupVoByPage({
             ...params,
           });
