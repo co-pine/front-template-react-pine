@@ -29,7 +29,6 @@ export const contentTypeMap = [
 
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   const [curContent, setCurContent] = useState(props.values.content);
-  console.log(props.values, 'props.values');
   return (
     <ModalForm
       modalProps={{

@@ -162,6 +162,13 @@ const TableList: React.FC = () => {
       },
     },
     {
+      title: '自定义搜索条件',
+      dataIndex: 'custom',
+      valueType: 'textarea',
+      hideInTable: true,
+      tooltip: '自定义内容',
+    },
+    {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
@@ -201,7 +208,8 @@ const TableList: React.FC = () => {
         actionRef={actionRef}
         rowKey="id"
         search={{
-          labelWidth: 120,
+          span: 5,
+          labelWidth: 'auto',
         }}
         toolBarRender={() => [
           <Button
