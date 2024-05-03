@@ -1,4 +1,4 @@
-import { ModalForm, ProForm, ProFormDigit, ProFormText } from '@ant-design/pro-components';
+import { ModalForm, ProForm, ProFormText } from '@ant-design/pro-components';
 import '@umijs/max';
 import React, { useState } from 'react';
 import { Select } from 'antd';
@@ -33,6 +33,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     <ModalForm
       modalProps={{
         onCancel: () => props.onCancel(),
+        destroyOnClose: true,
       }}
       initialValues={{
         id: props.values.id,
@@ -72,23 +73,12 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
         rules={[
           {
             required: true,
-            message: '请输入标题！',
+            message: '请输入内容！',
           },
         ]}
       >
         <Select options={contentTypeMap} />
       </ProForm.Item>
-      <ProFormDigit
-        name="priority"
-        label={'优先级'}
-        width="md"
-        rules={[
-          {
-            required: true,
-            message: '请输入大于 0 的数字！',
-          },
-        ]}
-      />
     </ModalForm>
   );
 };

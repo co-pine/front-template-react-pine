@@ -166,6 +166,8 @@ const TableList: React.FC = () => {
       dataIndex: 'custom',
       valueType: 'textarea',
       hideInTable: true,
+      // <Drawer/> 组件中隐藏
+      hideInDescriptions: true,
       tooltip: '自定义内容',
     },
     {

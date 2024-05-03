@@ -21,7 +21,7 @@ export async function getInitialState(): Promise<{
   fetchUserInfo?: () => Promise<API.LoginUserVO | undefined>;
 }> {
   const fetchUserInfo = async () => {
-    console.log('app.tsx, get login user')
+    console.log('app.tsx, get login user');
     try {
       const msg = await getLoginUser({
         skipErrorHandler: true,
